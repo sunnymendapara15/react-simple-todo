@@ -1,0 +1,106 @@
+:root {
+  color-scheme: light dark;
+}
+
+.app-shell {
+  max-width: 420px;
+  margin: 4rem auto;
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  letter-spacing: -0.02em;
+}
+
+header p {
+  margin: 0.35rem 0 1.5rem;
+  color: #475569;
+}
+
+.new-task {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.new-task input {
+  flex: 1;
+  padding: 0.7rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid #cbd5f5;
+  transition: border-color 0.2s ease;
+}
+
+.new-task input:focus {
+  border-color: #6366f1;
+  outline: none;
+}
+
+.new-task button {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-list li + li {
+  margin-top: 0.7rem;
+}
+
+.task-list li {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.8rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.task-list li label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+}
+
+.task-list li.done span {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.task-list .empty {
+  text-align: center;
+  color: #94a3b8;
+}
+
+footer {
+  margin-top: 1.5rem;
+  text-align: right;
+}
+
+footer button {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #cbd5f5;
+  background: transparent;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+footer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
