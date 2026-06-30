@@ -15,6 +15,7 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
   const [priority, setPriority] = useState('Medium');
+  const [logFilters, setLogFilters] = useState({});
   const intervalRef = useRef(null);
 
   const remaining = useMemo(() => tasks.filter((task) => !task.done).length, [tasks]);
@@ -49,6 +50,7 @@ function App() {
         priority,
         elapsed: 0,
         running: false,
+        logs: [],
       },
     ]);
     setNewTask('');
@@ -69,16 +71,40 @@ function App() {
     );
   };
 
+  const registerLog = (currentTask, type) => {
+    const timestamp = new Date().toLocaleTimeString();
+    return {
+      ...currentTask,
+      logs: [...currentTask.logs, { type, time: timestamp }],
+    };
+  };
+
   const toggleTimer = useCallback((id) => {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, running: !task.running } : task
-      )
+      prev.map((task) => {
+        if (task.id !== id || task.done) return task;
+        const nextRunning = !task.running;
+        const entry = nextRunning ? 'start' : 'stop';
+        const updatedTask = { ...task, running: nextRunning };
+        return registerLog(updatedTask, entry);
+      })
     );
+  }, []);
+
+  const setTaskLogFilter = useCallback((id, filter) => {
+    setLogFilters((prev) => ({
+      ...prev,
+      [id]: filter,
+    }));
   }, []);
 
   const clearCompleted = () => {
     setTasks((prev) => prev.filter((task) => !task.done));
+  };
+
+  const shouldShowEntry = (entryType, filter) => {
+    if (filter === 'all') return true;
+    return entryType === filter;
   };
 
   return (
@@ -124,39 +150,76 @@ function App() {
       </form>
 
       <ul className="task-list">
-        {tasks.map((task) => (
-          <li
-            key={task.id}
-            className={`task-item ${task.done ? 'done' : ''} ${task.running ? 'running' : ''}`}
-          >
-            <div className="task-content">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={task.done}
-                  onChange={() => toggleTask(task.id)}
-                />
-                <span>{task.text}</span>
-              </label>
-              <span className={`priority-pill ${task.priority.toLowerCase()}`}>
-                {task.priority}
-              </span>
-            </div>
-            <div className="task-meta">
-              <div className="timer">
-                <span>{formatDuration(task.elapsed)}</span>
-                {task.running && <span className="dot" aria-hidden="true" />}
+        {tasks.map((task) => {
+          const filter = logFilters[task.id] || 'all';
+          const filteredLogs = task.logs.filter((entry) => shouldShowEntry(entry.type, filter));
+          return (
+            <li
+              key={task.id}
+              className={`task-item ${task.done ? 'done' : ''} ${task.running ? 'running' : ''}`}
+            >
+              <div className="task-content">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={task.done}
+                    onChange={() => toggleTask(task.id)}
+                  />
+                  <span>{task.text}</span>
+                </label>
+                <span className={`priority-pill ${task.priority.toLowerCase()}`}>
+                  {task.priority}
+                </span>
               </div>
-              <button
-                type="button"
-                className={`timer-button ${task.running ? 'stop' : 'start'}`}
-                onClick={() => toggleTimer(task.id)}
-              >
-                {task.running ? 'Stop' : 'Start'}
-              </button>
-            </div>
-          </li>
-        ))}
+              <div className="task-meta">
+                <div className="timer">
+                  <span>{formatDuration(task.elapsed)}</span>
+                  {task.running && <span className="dot" aria-hidden="true" />}
+                </div>
+                <button
+                  type="button"
+                  className={`timer-button ${task.running ? 'stop' : 'start'}`}
+                  onClick={() => toggleTimer(task.id)}
+                  disabled={task.done}
+                >
+                  {task.running ? 'Stop' : 'Start'}
+                </button>
+              </div>
+              <div className="task-log">
+                <div className="log-heading-row">
+                  <p className="log-heading">Timer log</p>
+                  <div className="log-filter">
+                    {[
+                      { key: 'all', label: 'Show all' },
+                      { key: 'start', label: 'Only starts' },
+                      { key: 'stop', label: 'Only stops' },
+                    ].map((option) => (
+                      <button
+                        key={option.key}
+                        type="button"
+                        className={`log-filter-button ${filter === option.key ? 'active' : ''}`}
+                        onClick={() => setTaskLogFilter(task.id, option.key)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {filteredLogs.length === 0 ? (
+                  <p className="log-empty">No timer activity for this filter.</p>
+                ) : (
+                  <ul>
+                    {filteredLogs.map((entry, index) => (
+                      <li key={index} className={`log-entry ${entry.type}`}>
+                        {entry.type === 'start' ? 'Started' : 'Stopped'} at {entry.time}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          );
+        })}
         {tasks.length === 0 && (
           <li className="empty">Add your first task and start a timer.</li>
         )}

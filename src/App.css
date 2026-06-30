@@ -77,11 +77,13 @@ h1 {
 .input-row {
   display: flex;
   gap: 0.65rem;
+  flex-wrap: wrap;
 }
 
 .new-task input,
 .new-task select {
   flex: 1;
+  min-width: 140px;
   padding: 0.8rem 1rem;
   border-radius: 999px;
   border: 1px solid #cbd5f5;
@@ -211,6 +213,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .timer {
@@ -266,8 +269,79 @@ h1 {
   box-shadow: 0 12px 25px rgba(239, 68, 68, 0.35);
 }
 
-.timer-button:hover {
+.timer-button:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+
+.timer-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.task-log {
+  margin-top: 0.85rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.75rem;
+}
+
+.log-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.log-heading {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475569;
+}
+
+.log-filter {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.log-filter-button {
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.log-filter-button.active {
+  background: #1d4ed8;
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
+}
+
+.log-filter-button:not(.active) {
+  background: transparent;
+  color: #475569;
+  border-color: rgba(71, 85, 105, 0.2);
+}
+
+.log-empty {
+  margin: 0.45rem 0 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.log-entry {
+  font-size: 0.85rem;
+  margin: 0.35rem 0;
+}
+
+.log-entry.start {
+  color: #047857;
+}
+
+.log-entry.stop {
+  color: #b91c1c;
 }
 
 .task-list .empty {
